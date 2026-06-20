@@ -7,33 +7,10 @@
 
 ---
 
-## 🚀 Chạy nhanh
-
-```bash
-# 1. Clone repo
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-
-# 2. Tạo môi trường ảo (khuyến nghị)
-python -m venv venv
-source venv/bin/activate        # macOS/Linux
-venv\Scripts\activate           # Windows
-
-# 3. Cài thư viện
-pip install -r requirements.txt
-
-# 4. Chạy ứng dụng
-streamlit run app.py
-```
-
-Mở trình duyệt tại `http://localhost:8501`
-
----
-
 ## 📂 Cấu trúc dự án
 
 ```
-.
+TieuLuanKHDL.
 ├── app.py            # Toàn bộ ứng dụng Streamlit
 ├── requirements.txt  # Danh sách thư viện cần thiết
 └── README.md         # Tài liệu hướng dẫn (file này)
@@ -101,5 +78,5 @@ Mở trình duyệt tại `http://localhost:8501`
 ---
 
 <div align="center">
-Xây dựng với ❤️ bằng Python · Streamlit · Scikit-learn
+Lê Văn Thành - 24T1110009
 </div>
