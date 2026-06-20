@@ -131,7 +131,7 @@ with st.sidebar:
     st.markdown("""
     <div style='font-size:0.82rem; color:#718096; line-height:1.7'>
     <b>📚 Môn học:</b> Nhập môn KHDL<br>
-    <b>🎯 Chủ đề:</b> Thuật toán ML<br>
+    <b>🎯 Chủ đề:</b> Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục<br>
     <b>📌 Lĩnh vực:</b> Ứng dụng Giáo dục
     </div>
     """, unsafe_allow_html=True)
@@ -850,6 +850,6 @@ elif page == "⚖️ So sánh thuật toán":
 st.markdown("""
 <div class="footer">
     🎓 Đề tài: <b>Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục</b><br>
-    Môn: Nhập môn Khoa học Dữ liệu &nbsp;|&nbsp; Xây dựng bằng Python · Streamlit · Scikit-learn
+    Môn: Nhập môn Khoa học Dữ liệu &nbsp;|&nbsp; Lê Văn Thành - 24T1110009
 </div>
 """, unsafe_allow_html=True)
