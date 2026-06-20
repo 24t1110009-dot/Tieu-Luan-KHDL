@@ -160,7 +160,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""
     <div style='font-size:0.8rem; color:#4b5563;'>
-    <b>Đề tài:</b> Ứng dụng KHDL & ML nâng cao chất lượng dạy và học.<br>
+    <b>Đề tài:</b> Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục.<br>
     <b>Dữ liệu:</b> 400 học sinh mô phỏng theo hành vi thực tế.
     </div>
     """, unsafe_allow_html=True)
@@ -471,6 +471,6 @@ elif page == "⚖️ Khảo sát Hiệu năng Mô hình":
 # ── FOOTER ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer">
-    🎓 Hệ thống mô phỏng KHDL ứng dụng Giáo dục | Xây dựng hoàn toàn bằng Thư viện Streamlit & Scikit-Learn
+    🎓 Hệ thống mô phỏng KHDL ứng dụng Giáo dục | Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục
 </div>
 """, unsafe_allow_html=True)
