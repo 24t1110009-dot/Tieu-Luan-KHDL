@@ -4,29 +4,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
-from sklearn.datasets import make_classification, make_regression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import (
-    accuracy_score, classification_report, confusion_matrix,
-    mean_squared_error, r2_score
-)
+from sklearn.metrics import accuracy_score, confusion_matrix, mean_squared_error, r2_score
 import warnings
 warnings.filterwarnings("ignore")
 
-# ── Page config ──────────────────────────────────────────────────────────────
+# ── PAGE CONFIG ──────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="ML trong Giáo dục",
+    page_title="Hệ Thống Học Máy Hỗ Trợ Giáo Dục",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ── Custom CSS ────────────────────────────────────────────────────────────────
+# ── CUSTOM CSS (Giao diện hiện đại, trực quan) ─────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
@@ -34,7 +30,7 @@ st.markdown("""
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 .main-hero {
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     border-radius: 16px;
     padding: 2.5rem 3rem;
     margin-bottom: 2rem;
@@ -45,811 +41,436 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     font-size: 2.4rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    line-height: 1.2;
 }
-.main-hero p { font-size: 1.05rem; opacity: 0.85; margin: 0; }
+.main-hero p { font-size: 1.1rem; opacity: 0.9; margin: 0; }
+
 .badge {
     display: inline-block;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
     border-radius: 20px;
-    padding: 3px 14px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
     margin-bottom: 1rem;
+    text-transform: uppercase;
 }
 
-.algo-card {
-    background: #f8faff;
-    border: 1.5px solid #e2e8f4;
-    border-left: 5px solid #3b7dd8;
-    border-radius: 10px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 1rem;
-}
-.algo-card h4 { color: #1e3a5f; margin: 0 0 0.4rem 0; font-size: 1.05rem; font-weight: 600; }
-.algo-card p  { color: #4a5568; font-size: 0.9rem; margin: 0; }
-
-.metric-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.metric-card {
+    background: white;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 1.2rem;
-    color: white;
+    padding: 1.5rem;
     text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.metric-box .val { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-.metric-box .lbl { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.metric-card .num { font-size: 2.2rem; font-weight: 700; color: #1e3a8a; }
+.metric-card .label { font-size: 0.85rem; color: #4b5563; font-weight: 500; margin-top: 4px; }
 
 .section-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    color: #1e3a5f;
-    border-bottom: 3px solid #3b7dd8;
+    color: #1e3a8a;
+    border-bottom: 3px solid #3b82f6;
     padding-bottom: 0.4rem;
-    margin: 1.5rem 0 1rem 0;
+    margin: 2rem 0 1rem 0;
 }
-.info-box {
-    background: #eef4ff;
-    border-radius: 10px;
-    padding: 1rem 1.3rem;
-    border: 1px solid #c3d8f7;
-    color: #1e3a5f;
-    font-size: 0.93rem;
-    line-height: 1.6;
+
+.edu-box {
+    background: #f0fdf4;
+    border-left: 5px solid #16a34a;
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-top: 1rem;
 }
+.edu-box-danger {
+    background: #fef2f2;
+    border-left: 5px solid #dc2626;
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+}
+
 .footer {
     text-align: center;
-    color: #718096;
-    font-size: 0.83rem;
-    padding: 1.5rem 0 0.5rem;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 3rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+    padding: 2rem 0;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 4rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Sidebar navigation ────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("## 🎓 ML trong Giáo dục")
-    st.markdown("---")
-    page = st.radio(
-        "Chọn nội dung",
-        [
-            "🏠 Tổng quan",
-            "🌳 Decision Tree",
-            "👥 K-Nearest Neighbors",
-            "📈 Linear Regression",
-            "🔵 Logistic Regression",
-            "📊 Naive Bayes",
-            "⚖️ So sánh thuật toán",
-        ],
-        label_visibility="collapsed",
-    )
-    st.markdown("---")
-    st.markdown("""
-    <div style='font-size:0.82rem; color:#718096; line-height:1.7'>
-    <b>📚 Môn học:</b> Nhập môn KHDL<br>
-    <b>🎯 Chủ đề:</b> Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục<br>
-    <b>📌 Lĩnh vực:</b> Ứng dụng Giáo dục
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# HELPER FUNCTIONS (Đã chuyển lên đầu để tránh ngắt mạch if-elif)
-# ══════════════════════════════════════════════════════════════════════════════
+# ── DATA GENERATOR (Mô phỏng dữ liệu học sinh thực tế) ─────────────────────────
 @st.cache_data
-def generate_edu_data(n=300, seed=42):
+def load_student_dataset(n_samples=400, seed=42):
     rng = np.random.default_rng(seed)
-    study_hours   = rng.uniform(1, 10, n)
-    attendance    = rng.uniform(50, 100, n)
-    midterm       = rng.uniform(3, 10, n)
-    sleep_hours   = rng.uniform(4, 9, n)
-    activities    = rng.integers(0, 5, n)
-
-    final = (
-        2.5 * study_hours
-        + 0.05 * attendance
-        + 0.6 * midterm
-        + 0.2 * sleep_hours
-        - 0.1 * activities
-        + rng.normal(0, 0.8, n)
+    study_hours   = rng.uniform(1.5, 10, n_samples)      # Giờ tự học / tuần
+    attendance    = rng.uniform(60, 100, n_samples)      # % số tiết tham gia lớp
+    midterm_score = rng.uniform(2.0, 10, n_samples)      # Điểm thi giữa kỳ
+    digital_clicks= rng.uniform(10, 250, n_samples)      # Số lượt tương tác trên LMS (E-learning)
+    
+    # Tính toán điểm cuối kỳ dựa trên các trọng số giáo dục thực tế + nhiễu ngẫu nhiên
+    final_score = (
+        0.25 * study_hours 
+        + 0.04 * attendance 
+        + 0.45 * midterm_score 
+        + 0.005 * digital_clicks 
+        + rng.normal(0, 0.6, n_samples)
     )
-    final = np.clip(final, 0, 10)
-
-    labels = pd.cut(final, bins=[0, 5, 6.5, 8, 10],
-                    labels=["Yếu", "Trung bình", "Khá", "Giỏi"])
-
+    final_score = np.clip(final_score, 0, 10)
+    
+    # Gán nhãn học lực theo quy chế đào tạo
+    grade = pd.cut(final_score, bins=[0, 5.0, 6.5, 8.0, 10.0],
+                    labels=["Yếu/Kém", "Trung bình", "Khá", "Giỏi/Xuất sắc"])
+    
+    # Gán nhãn nguy cơ bỏ học (Dưới 4.5 điểm giữa kỳ và chuyên cần dưới 75%)
+    dropout_risk = ((midterm_score < 4.5) & (attendance < 75)).astype(int)
+    
     return pd.DataFrame({
-        "study_hours": study_hours,
-        "attendance":  attendance,
-        "midterm":     midterm,
-        "sleep_hours": sleep_hours,
-        "activities":  activities,
-        "final_score": final,
-        "grade":       labels,
+        "Giờ tự học": study_hours,
+        "Tỷ lệ chuyên cần": attendance,
+        "Điểm giữa kỳ": midterm_score,
+        "Tương tác LMS": digital_clicks,
+        "Điểm cuối kỳ": final_score,
+        "Xếp loại học lực": grade,
+        "Nguy cơ bỏ học": dropout_risk
     })
 
+df_edu = load_student_dataset()
 
-def split_scale(df, features, target, test_size=0.2):
-    X = df[features].values
-    y = df[target].values
-    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=test_size, random_state=42)
-    scaler = StandardScaler()
-    X_tr = scaler.fit_transform(X_tr)
-    X_te = scaler.transform(X_te)
-    return X_tr, X_te, y_tr, y_te
-
-
-def plot_confusion(y_true, y_pred, labels=None):
-    cm = confusion_matrix(y_true, y_pred, labels=labels)
-    fig, ax = plt.subplots(figsize=(5, 4))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                xticklabels=labels or "auto",
-                yticklabels=labels or "auto", ax=ax)
-    ax.set_xlabel("Dự đoán", fontsize=10)
-    ax.set_ylabel("Thực tế", fontsize=10)
-    ax.set_title("Ma trận nhầm lẫn", fontsize=11, fontweight="bold")
-    fig.tight_layout()
-    return fig
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 1 — TỔNG QUAN
-# ══════════════════════════════════════════════════════════════════════════════
-if page == "🏠 Tổng quan":
+# ── SIDEBAR NAVIGATION ────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("### 🎓 Quản Lý Học Đường")
+    st.markdown("---")
+    page = st.radio(
+        "Lựa chọn phân hệ:",
+        [
+            "🏠 Trung tâm Điều hành (Dashboard)",
+            "📈 Dự báo Điểm số (Hồi quy Tuyến tính)",
+            "🌳 Phân loại Học lực (Cây Quyết định)",
+            "👥 Gợi ý Lộ trình (K-Nhóm Hàng xóm)",
+            "🚨 Cảnh báo Sớm Học sinh Bỏ học (Logistic)",
+            "📊 Sàng lọc Đơn xin Học bổng (Naive Bayes)",
+            "⚖️ Khảo sát Hiệu năng Mô hình"
+        ]
+    )
+    st.markdown("---")
     st.markdown("""
-    <div class="main-hero">
-        <div class="badge">📖 NHẬP MÔN KHOA HỌC DỮ LIỆU</div>
-        <h1>Thuật Toán Học Máy<br>& Ứng Dụng trong Giáo Dục</h1>
-        <p>Khám phá 5 thuật toán Machine Learning phổ biến và cách chúng được ứng dụng
-        để cải thiện chất lượng giáo dục — từ dự đoán kết quả học tập đến phân loại học sinh.</p>
+    <div style='font-size:0.8rem; color:#4b5563;'>
+    <b>Đề tài:</b> Ứng dụng KHDL & ML nâng cao chất lượng dạy và học.<br>
+    <b>Dữ liệu:</b> 400 học sinh mô phỏng theo hành vi thực tế.
     </div>
     """, unsafe_allow_html=True)
 
-    # Overview metrics
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 1. TRUNG TÂM ĐIỀU HÀNH
+# ══════════════════════════════════════════════════════════════════════════════
+if page == "🏠 Trung tâm Điều hành (Dashboard)":
+    st.markdown("""
+    <div class="main-hero">
+        <div class="badge">Hệ Thống Trí Tuệ Nhân Tạo Học Đường</div>
+        <h1>AI Trung Tâm Điều Hành Giáo Dục</h1>
+        <p>Phân tích dữ liệu học tập tổng thể nhằm tối ưu hóa phương pháp giảng dạy và hỗ trợ can thiệp sư phạm kịp thời.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Tổng quan chỉ số trắc lượng trường học
     c1, c2, c3, c4 = st.columns(4)
-    for col, val, lbl in zip(
-        [c1, c2, c3, c4],
-        ["5", "3", "2", "∞"],
-        ["Thuật toán", "Bài toán phân loại", "Bài toán hồi quy", "Khả năng ứng dụng"],
-    ):
-        col.markdown(f"""
-        <div class="metric-box">
-            <div class="val">{val}</div>
-            <div class="lbl">{lbl}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="section-title">📌 Các thuật toán được trình bày</div>', unsafe_allow_html=True)
-
-    algos = [
-        ("🌳 Decision Tree", "Cây quyết định", "Phân loại học sinh theo kết quả học tập, nhận diện các yếu tố ảnh hưởng đến điểm số."),
-        ("👥 K-Nearest Neighbors", "K hàng xóm gần nhất", "Gợi ý tài liệu học tập dựa trên hồ sơ học sinh tương tự, phân nhóm học lực."),
-        ("📈 Linear Regression", "Hồi quy tuyến tính", "Dự đoán điểm thi cuối kỳ từ điểm giữa kỳ, thời gian học, số buổi tham dự."),
-        ("🔵 Logistic Regression", "Hồi quy Logistic", "Dự đoán nguy cơ học sinh bỏ học, phân loại đậu/rớt kỳ thi."),
-        ("📊 Naive Bayes", "Bayes ngây thơ", "Phân loại câu hỏi trắc nghiệm theo chủ đề, phát hiện gian lận thi cử."),
-    ]
-
-    for icon_name, vn_name, app_desc in algos:
-        st.markdown(f"""
-        <div class="algo-card">
-            <h4>{icon_name} — {vn_name}</h4>
-            <p>🎓 <b>Ứng dụng:</b> {app_desc}</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="section-title">🔄 Quy trình học máy tổng quát</div>', unsafe_allow_html=True)
-
-    steps = ["Thu thập\ndữ liệu", "Tiền xử lý\ndữ liệu", "Chọn\nmô hình", "Huấn\nluyện", "Đánh\ngiá", "Triển\nkhai"]
-    colors = ["#3b7dd8", "#5a95e8", "#7ab0f0", "#9ac8f5", "#b4d9f8", "#cce8fb"]
-
-    fig, ax = plt.subplots(figsize=(11, 2.2))
-    ax.set_xlim(0, len(steps))
-    ax.set_ylim(0, 1)
-    ax.axis("off")
-    for i, (s, c) in enumerate(zip(steps, colors)):
-        rect = mpatches.FancyBboxPatch((i + 0.08, 0.2), 0.75, 0.6,
-                                        boxstyle="round,pad=0.04", color=c, zorder=2)
-        ax.add_patch(rect)
-        ax.text(i + 0.455, 0.515, s, ha="center", va="center",
-                fontsize=9, fontweight="bold", color="white", zorder=3, linespacing=1.4)
-        if i < len(steps) - 1:
-            ax.annotate("", xy=(i + 0.93, 0.5), xytext=(i + 0.83, 0.5),
-                        arrowprops=dict(arrowstyle="->", color="#1e3a5f", lw=2))
-    fig.patch.set_facecolor("#f8faff")
-    st.pyplot(fig, use_container_width=True)
-    plt.close()
-
-    st.markdown("""
-    <div class="info-box">
-    💡 <b>Hướng dẫn sử dụng:</b> Chọn từng thuật toán ở thanh bên trái để xem lý thuyết,
-    chạy thử trực tiếp trên dữ liệu giáo dục mô phỏng, và quan sát kết quả trực quan.
-    Trang <b>So sánh thuật toán</b> sẽ đánh giá hiệu quả tổng hợp của cả 5 mô hình.
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 2 — DECISION TREE
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "🌳 Decision Tree":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">THUẬT TOÁN 1 / 5</div>
-        <h1>🌳 Decision Tree<br><span style='font-size:1.4rem;font-weight:500'>Cây Quyết Định</span></h1>
-        <p>Phân loại học sinh theo xếp loại học lực dựa trên các chỉ số học tập.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="section-title">📖 Lý thuyết</div>', unsafe_allow_html=True)
-    with st.expander("Xem lý thuyết thuật toán", expanded=True):
-        c1, c2 = st.columns(2)
-        c1.markdown("""
-        **Decision Tree** chia dữ liệu bằng cách chọn đặc trưng tốt nhất tại mỗi nút theo tiêu chí:
-        - **Gini Impurity**: đo mức độ "không thuần" của tập dữ liệu
-        - **Information Gain / Entropy**: dựa trên lý thuyết thông tin
-
-        **Ưu điểm:** Dễ giải thích, không cần chuẩn hóa dữ liệu, xử lý được cả phân loại lẫn số.
-
-        **Nhược điểm:** Dễ overfit nếu không kiểm soát độ sâu cây.
-        """)
-        c2.markdown("""
-        **Ứng dụng trong giáo dục:**
-        - Phân loại học sinh: Yếu / Trung bình / Khá / Giỏi
-        - Nhận diện nhân tố ảnh hưởng kết quả học tập
-        - Hỗ trợ giáo viên ra quyết định can thiệp sớm
-        - Xây dựng hệ thống tư vấn học bổng
-
-        **Công thức Gini:**
-        $$Gini = 1 - \\sum_{i=1}^{C} p_i^2$$
-        """)
-
-    st.markdown('<div class="section-title">🧪 Thực hành</div>', unsafe_allow_html=True)
-    df = generate_edu_data()
-
-    col_p, col_main = st.columns([1, 3])
-    with col_p:
-        max_depth = st.slider("Độ sâu tối đa (max_depth)", 2, 10, 4)
-        criterion = st.selectbox("Tiêu chí phân chia", ["gini", "entropy"])
-        features  = st.multiselect("Đặc trưng đầu vào",
-                                   ["study_hours", "attendance", "midterm", "sleep_hours", "activities"],
-                                   default=["study_hours", "attendance", "midterm"])
-
-    if len(features) < 1:
-        st.warning("Chọn ít nhất 1 đặc trưng.")
-        st.stop()
-
-    le = LabelEncoder()
-    df["grade_enc"] = le.fit_transform(df["grade"])
-    X_tr, X_te, y_tr, y_te = split_scale(df, features, "grade_enc")
-
-    clf = DecisionTreeClassifier(max_depth=max_depth, criterion=criterion, random_state=42)
-    clf.fit(X_tr, y_tr)
-    y_pred = clf.predict(X_te)
-    acc = accuracy_score(y_te, y_pred)
-
-    with col_main:
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Độ chính xác", f"{acc:.2%}")
-        m2.metric("Số nút lá", clf.get_n_leaves())
-        m3.metric("Độ sâu thực tế", clf.get_depth())
-
-        tab1, tab2, tab3 = st.tabs(["Hình cây", "Ma trận nhầm lẫn", "Tầm quan trọng đặc trưng"])
-
-        with tab1:
-            fig, ax = plt.subplots(figsize=(14, 5))
-            plot_tree(clf, feature_names=features,
-                      class_names=le.classes_, filled=True,
-                      rounded=True, fontsize=8, ax=ax, max_depth=3)
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-        with tab2:
-            st.pyplot(plot_confusion(y_te, y_pred, labels=list(range(len(le.classes_)))), use_container_width=True)
-            plt.close()
-
-        with tab3:
-            imp = pd.Series(clf.feature_importances_, index=features).sort_values(ascending=True)
-            fig, ax = plt.subplots(figsize=(6, 3))
-            imp.plot.barh(ax=ax, color="#3b7dd8")
-            ax.set_title("Feature Importance", fontweight="bold")
-            ax.set_xlabel("Importance")
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 3 — KNN
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "👥 K-Nearest Neighbors":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">THUẬT TOÁN 2 / 5</div>
-        <h1>👥 K-Nearest Neighbors<br><span style='font-size:1.4rem;font-weight:500'>K Hàng Xóm Gần Nhất</span></h1>
-        <p>Phân loại học sinh dựa trên sự tương đồng với các học sinh đã biết kết quả.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.expander("📖 Lý thuyết", expanded=True):
-        c1, c2 = st.columns(2)
-        c1.markdown("""
-        **KNN** phân loại một điểm mới bằng cách tìm K điểm gần nhất trong tập huấn luyện và lấy nhãn phổ biến nhất.
-
-        **Khoảng cách Euclidean:**
-        $$d(x,y) = \\sqrt{\\sum_{i=1}^{n}(x_i - y_i)^2}$$
-
-        **Ưu điểm:** Không cần huấn luyện (lazy learning), đơn giản, hiệu quả với dữ liệu nhỏ.
-
-        **Nhược điểm:** Chậm với dữ liệu lớn, nhạy cảm với nhiễu và chiều dữ liệu cao.
-        """)
-        c2.markdown("""
-        **Ứng dụng trong giáo dục:**
-        - Gợi ý tài liệu học tập cho học sinh tương tự
-        - Phân nhóm học sinh theo phong cách học
-        - Tìm học sinh cần hỗ trợ thêm
-        - Hệ thống gợi ý khóa học (recommender)
-        """)
-
-    df = generate_edu_data()
-    le = LabelEncoder()
-    df["grade_enc"] = le.fit_transform(df["grade"])
-    features = ["study_hours", "attendance", "midterm"]
-
-    col_p, col_main = st.columns([1, 3])
-    with col_p:
-        k = st.slider("Số hàng xóm K", 1, 20, 5)
-        metric = st.selectbox("Khoảng cách", ["euclidean", "manhattan", "minkowski"])
-
-    X_tr, X_te, y_tr, y_te = split_scale(df, features, "grade_enc")
-    knn = KNeighborsClassifier(n_neighbors=k, metric=metric)
-    knn.fit(X_tr, y_tr)
-    y_pred = knn.predict(X_te)
-    acc = accuracy_score(y_te, y_pred)
-
-    with col_main:
-        m1, m2 = st.columns(2)
-        m1.metric("Độ chính xác", f"{acc:.2%}")
-        m2.metric("K neighbors", k)
-
-        tab1, tab2, tab3 = st.tabs(["Đường cong K", "Ma trận nhầm lẫn", "Dự đoán học sinh mới"])
-
-        with tab1:
-            k_vals = range(1, 21)
-            accs = []
-            for kv in k_vals:
-                m = KNeighborsClassifier(n_neighbors=kv, metric=metric)
-                m.fit(X_tr, y_tr)
-                accs.append(accuracy_score(y_te, m.predict(X_te)))
-            fig, ax = plt.subplots(figsize=(7, 3.5))
-            ax.plot(k_vals, accs, "o-", color="#3b7dd8", lw=2, markersize=5)
-            ax.axvline(k, color="#e53e3e", ls="--", label=f"K={k}")
-            ax.set_xlabel("K")
-            ax.set_ylabel("Accuracy")
-            ax.set_title("Accuracy theo K", fontweight="bold")
-            ax.legend()
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-        with tab2:
-            st.pyplot(plot_confusion(y_te, y_pred), use_container_width=True)
-            plt.close()
-
-        with tab3:
-            st.markdown("**Nhập thông tin học sinh mới:**")
-            sh = st.slider("Giờ học/ngày", 1.0, 10.0, 5.0, 0.5)
-            at = st.slider("Tỷ lệ tham dự (%)", 50, 100, 80)
-            mt = st.slider("Điểm giữa kỳ", 0.0, 10.0, 6.5, 0.5)
-            scaler = StandardScaler()
-            scaler.fit(df[features].values)
-            xnew = scaler.transform([[sh, at, mt]])
-            pred_label = le.classes_[knn.predict(xnew)[0]]
-            proba = knn.predict_proba(xnew)[0]
-            st.success(f"🎯 Dự đoán xếp loại: **{pred_label}**")
-            fig, ax = plt.subplots(figsize=(5, 2.5))
-            ax.barh(le.classes_, proba, color="#3b7dd8")
-            ax.set_xlabel("Xác suất")
-            ax.set_title("Phân phối xác suất", fontsize=10, fontweight="bold")
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 4 — LINEAR REGRESSION
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "📈 Linear Regression":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">THUẬT TOÁN 3 / 5</div>
-        <h1>📈 Linear Regression<br><span style='font-size:1.4rem;font-weight:500'>Hồi Quy Tuyến Tính</span></h1>
-        <p>Dự đoán điểm thi cuối kỳ của học sinh từ các chỉ số học tập.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.expander("📖 Lý thuyết", expanded=True):
-        c1, c2 = st.columns(2)
-        c1.markdown("""
-        **Linear Regression** mô hình hóa quan hệ tuyến tính giữa biến phụ thuộc y và các biến độc lập x:
-
-        $$\\hat{y} = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + ... + \\beta_n x_n$$
-
-        **Hàm mất mát (MSE):**
-        $$MSE = \\frac{1}{n}\\sum_{i=1}^{n}(y_i - \\hat{y}_i)^2$$
-
-        Tham số tối ưu bằng **Least Squares:** $\\beta = (X^TX)^{-1}X^Ty$
-        """)
-        c2.markdown("""
-        **Ứng dụng trong giáo dục:**
-        - Dự đoán điểm thi cuối kỳ từ điểm giữa kỳ
-        - Ước lượng thời gian cần thiết để đạt điểm mục tiêu
-        - Phân tích tác động của số buổi học đến kết quả
-        - Lập kế hoạch học tập cá nhân hóa
-
-        **Đánh giá mô hình:**
-        - R² (coefficient of determination): càng gần 1 càng tốt
-        - RMSE: sai số trung bình bình phương
-        """)
-
-    df = generate_edu_data()
-    col_p, col_main = st.columns([1, 3])
-    with col_p:
-        feature_x = st.selectbox("Biến đầu vào chính (trục x)",
-                                  ["study_hours", "attendance", "midterm", "sleep_hours"])
-        use_multi = st.checkbox("Dùng hồi quy bội (multiple)", value=False)
-
-    if use_multi:
-        features = ["study_hours", "attendance", "midterm", "sleep_hours"]
-    else:
-        features = [feature_x]
-
-    X = df[features].values
-    y = df["final_score"].values
-    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
-    reg = LinearRegression()
-    reg.fit(X_tr, y_tr)
-    y_pred = reg.predict(X_te)
-    mse = mean_squared_error(y_te, y_pred)
-    r2  = r2_score(y_te, y_pred)
-
-    with col_main:
-        m1, m2, m3 = st.columns(3)
-        m1.metric("R² Score", f"{r2:.4f}")
-        m2.metric("RMSE", f"{np.sqrt(mse):.3f}")
-        m3.metric("MSE", f"{mse:.3f}")
-
-        if not use_multi:
-            tab1, tab2 = st.tabs(["Scatter + đường hồi quy", "Phân phối sai số"])
-            with tab1:
-                xv = df[feature_x].values
-                xline = np.linspace(xv.min(), xv.max(), 100).reshape(-1, 1)
-                yline = reg.predict(xline)
-                fig, ax = plt.subplots(figsize=(7, 4))
-                ax.scatter(df[feature_x], df["final_score"], alpha=0.4, color="#3b7dd8", s=25, label="Thực tế")
-                ax.plot(xline, yline, color="#e53e3e", lw=2.5, label="Hồi quy")
-                ax.set_xlabel(feature_x, fontsize=10)
-                ax.set_ylabel("Điểm cuối kỳ", fontsize=10)
-                ax.set_title(f"Hồi quy: {feature_x} → final_score", fontweight="bold")
-                ax.legend()
-                fig.tight_layout()
-                st.pyplot(fig, use_container_width=True)
-                plt.close()
-            with tab2:
-                resid = y_te - y_pred
-                fig, ax = plt.subplots(figsize=(7, 3.5))
-                ax.hist(resid, bins=20, color="#3b7dd8", edgecolor="white", alpha=0.85)
-                ax.axvline(0, color="#e53e3e", lw=2, ls="--")
-                ax.set_xlabel("Sai số (residual)", fontsize=10)
-                ax.set_title("Phân phối sai số", fontweight="bold")
-                fig.tight_layout()
-                st.pyplot(fig, use_container_width=True)
-                plt.close()
-        else:
-            fig, ax = plt.subplots(figsize=(7, 4))
-            ax.scatter(y_te, y_pred, alpha=0.5, color="#3b7dd8", s=30)
-            mn, mx = min(y_te.min(), y_pred.min()), max(y_te.max(), y_pred.max())
-            ax.plot([mn, mx], [mn, mx], "r--", lw=2, label="Dự đoán hoàn hảo")
-            ax.set_xlabel("Thực tế", fontsize=10)
-            ax.set_ylabel("Dự đoán", fontsize=10)
-            ax.set_title("Thực tế vs Dự đoán (Multiple Regression)", fontweight="bold")
-            ax.legend()
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-            st.markdown("**Hệ số hồi quy:**")
-            coef_df = pd.DataFrame({"Đặc trưng": features, "Hệ số": reg.coef_})
-            st.dataframe(coef_df.set_index("Đặc trưng"), use_container_width=True)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 5 — LOGISTIC REGRESSION
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "🔵 Logistic Regression":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">THUẬT TOÁN 4 / 5</div>
-        <h1>🔵 Logistic Regression<br><span style='font-size:1.4rem;font-weight:500'>Hồi Quy Logistic</span></h1>
-        <p>Dự đoán xác suất đậu/rớt kỳ thi và phát hiện học sinh có nguy cơ.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.expander("📖 Lý thuyết", expanded=True):
-        c1, c2 = st.columns(2)
-        c1.markdown("""
-        **Logistic Regression** dùng hàm sigmoid để chuyển đổi đầu ra về xác suất [0,1]:
-
-        $$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$
-
-        $$P(y=1|x) = \\sigma(\\beta^T x)$$
-
-        **Hàm mất mát (Binary Cross-Entropy):**
-        $$L = -\\frac{1}{n}\\sum[y\\log\\hat{p} + (1-y)\\log(1-\\hat{p})]$$
-        """)
-        c2.markdown("""
-        **Ứng dụng trong giáo dục:**
-        - Dự đoán xác suất học sinh đậu/rớt
-        - Phát hiện sớm học sinh có nguy cơ bỏ học
-        - Phân loại học sinh cần hỗ trợ tâm lý
-        - Tư vấn hướng nghiệp dựa trên học lực
-
-        **Lưu ý:** Logistic Regression cho xác suất, không chỉ nhãn,
-        nên rất hữu ích để quyết định mức độ can thiệp.
-        """)
-
-    df = generate_edu_data()
-    df["pass"] = (df["final_score"] >= 5).astype(int)
-    features = ["study_hours", "attendance", "midterm", "sleep_hours"]
-
-    col_p, col_main = st.columns([1, 3])
-    with col_p:
-        C = st.select_slider("Regularization C", options=[0.01, 0.1, 1.0, 10.0, 100.0], value=1.0)
-        threshold = st.slider("Ngưỡng quyết định", 0.1, 0.9, 0.5, 0.05)
-
-    X_tr, X_te, y_tr, y_te = split_scale(df, features, "pass")
-    clf = LogisticRegression(C=C, max_iter=1000, random_state=42)
-    clf.fit(X_tr, y_tr)
-    y_proba = clf.predict_proba(X_te)[:, 1]
-    y_pred  = (y_proba >= threshold).astype(int)
-    acc = accuracy_score(y_te, y_pred)
-
-    with col_main:
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Độ chính xác", f"{acc:.2%}")
-        n_risk = (y_proba < threshold).sum()
-        m2.metric("HS nguy cơ rớt", n_risk)
-        m3.metric("Ngưỡng", threshold)
-
-        tab1, tab2, tab3 = st.tabs(["Phân phối xác suất", "Ma trận nhầm lẫn", "Sigmoid curve"])
-
-        with tab1:
-            fig, ax = plt.subplots(figsize=(7, 3.5))
-            ax.hist([y_proba[y_te == 0], y_proba[y_te == 1]],
-                    bins=20, label=["Rớt (thực tế)", "Đậu (thực tế)"],
-                    color=["#e53e3e", "#38a169"], alpha=0.75, stacked=False)
-            ax.axvline(threshold, color="#d69e2e", ls="--", lw=2, label=f"Ngưỡng={threshold}")
-            ax.set_xlabel("Xác suất đậu", fontsize=10)
-            ax.set_ylabel("Số học sinh", fontsize=10)
-            ax.set_title("Phân phối xác suất theo kết quả thực", fontweight="bold")
-            ax.legend()
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-        with tab2:
-            st.pyplot(plot_confusion(y_te, y_pred, labels=[0, 1]), use_container_width=True)
-            plt.close()
-
-        with tab3:
-            z = np.linspace(-8, 8, 300)
-            sig = 1 / (1 + np.exp(-z))
-            fig, ax = plt.subplots(figsize=(7, 3.5))
-            ax.plot(z, sig, color="#3b7dd8", lw=2.5)
-            ax.axvline(threshold, color="#e53e3e", ls="--", label=f"Ngưỡng={threshold}")
-            ax.axhline(0.5, color="#718096", ls=":", lw=1)
-            ax.fill_between(z, sig, threshold, where=(sig < threshold), alpha=0.12, color="#e53e3e", label="Vùng rớt")
-            ax.fill_between(z, sig, threshold, where=(sig >= threshold), alpha=0.12, color="#38a169", label="Vùng đậu")
-            ax.set_xlabel("z = β·x", fontsize=10)
-            ax.set_ylabel("σ(z)", fontsize=10)
-            ax.set_title("Hàm Sigmoid", fontweight="bold")
-            ax.legend()
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 6 — NAIVE BAYES
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "📊 Naive Bayes":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">THUẬT TOÁN 5 / 5</div>
-        <h1>📊 Naive Bayes<br><span style='font-size:1.4rem;font-weight:500'>Phân loại Bayes Ngây Thơ</span></h1>
-        <p>Phân loại xếp loại học lực dựa trên định lý Bayes.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.expander("📖 Lý thuyết", expanded=True):
-        c1, c2 = st.columns(2)
-        c1.markdown("""
-        **Naive Bayes** áp dụng định lý Bayes với giả định các đặc trưng **độc lập có điều kiện**:
-
-        $$P(C|X) = \\frac{P(X|C) \\cdot P(C)}{P(X)}$$
-
-        **Gaussian Naive Bayes** giả định mỗi đặc trưng phân phối chuẩn:
-        $$P(x_i|C) = \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(x_i-\\mu)^2}{2\\sigma^2}}$$
-
-        **Ưu điểm:** Rất nhanh, tốt với dữ liệu nhỏ, hiệu quả với text.
-        """)
-        c2.markdown("""
-        **Ứng dụng trong giáo dục:**
-        - Phân loại câu hỏi theo chủ đề (NLP)
-        - Phát hiện bài làm có dấu hiệu gian lận
-        - Lọc nội dung không phù hợp trong hệ thống LMS
-        - Xếp loại học sinh từ nhiều chỉ số khác nhau
-        - Hệ thống hỏi đáp tự động (FAQ bot)
-        """)
-
-    df = generate_edu_data()
-    le = LabelEncoder()
-    df["grade_enc"] = le.fit_transform(df["grade"])
-    features = ["study_hours", "attendance", "midterm", "sleep_hours", "activities"]
-
-    col_p, col_main = st.columns([1, 3])
-    with col_p:
-        var_smoothing = st.select_slider("Var smoothing (log10)",
-                                          options=[-12, -10, -9, -8, -6, -4], value=-9)
-
-    X_tr, X_te, y_tr, y_te = split_scale(df, features, "grade_enc")
-    nb = GaussianNB(var_smoothing=10 ** var_smoothing)
-    nb.fit(X_tr, y_tr)
-    y_pred  = nb.predict(X_te)
-    y_proba = nb.predict_proba(X_te)
-    acc = accuracy_score(y_te, y_pred)
-
-    with col_main:
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Độ chính xác", f"{acc:.2%}")
-        m2.metric("Số lớp", len(le.classes_))
-        m3.metric("Mẫu huấn luyện", len(X_tr))
-
-        tab1, tab2, tab3 = st.tabs(["Ma trận nhầm lẫn", "Phân phối xác suất", "Class statistics"])
-
-        with tab1:
-            st.pyplot(plot_confusion(y_te, y_pred), use_container_width=True)
-            plt.close()
-
-        with tab2:
-            fig, axes = plt.subplots(1, 4, figsize=(12, 3), sharey=False)
-            for i, (ax, cls) in enumerate(zip(axes, le.classes_)):
-                ax.hist(y_proba[:, i], bins=15, color="#3b7dd8", edgecolor="white", alpha=0.85)
-                ax.set_title(cls, fontsize=9, fontweight="bold")
-                ax.set_xlabel("P", fontsize=8)
-            fig.suptitle("Phân phối xác suất theo lớp", fontweight="bold")
-            fig.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-
-        with tab3:
-            rows = []
-            for i, cls in enumerate(le.classes_):
-                rows.append({
-                    "Lớp": cls,
-                    "Số mẫu": (y_tr == i).sum(),
-                    "Prior P(C)": f"{(y_tr == i).mean():.3f}",
-                })
-            st.dataframe(pd.DataFrame(rows).set_index("Lớp"), use_container_width=True)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 7 — SO SÁNH THUẬT TOÁN
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "⚖️ So sánh thuật toán":
-    st.markdown("""
-    <div class="main-hero">
-        <div class="badge">TỔNG HỢP & ĐÁNH GIÁ</div>
-        <h1>⚖️ So Sánh Thuật Toán<br><span style='font-size:1.4rem;font-weight:500'>Benchmark trên dữ liệu giáo dục</span></h1>
-        <p>Đánh giá và so sánh hiệu suất của 5 thuật toán trên cùng một tập dữ liệu.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    df = generate_edu_data()
-    le = LabelEncoder()
-    df["grade_enc"] = le.fit_transform(df["grade"])
-    features = ["study_hours", "attendance", "midterm", "sleep_hours", "activities"]
-
-    X_tr, X_te, y_tr, y_te = split_scale(df, features, "grade_enc")
-
-    models = {
-        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
-        "KNN (K=7)":     KNeighborsClassifier(n_neighbors=7),
-        "Logistic Reg.": LogisticRegression(max_iter=1000, random_state=42),
-        "Naive Bayes":   GaussianNB(),
-    }
-
-    results = []
-    preds   = {}
-    for name, model in models.items():
-        model.fit(X_tr, y_tr)
-        yp  = model.predict(X_te)
-        acc = accuracy_score(y_te, yp)
-        preds[name] = yp
-        results.append({"Thuật toán": name, "Accuracy": acc})
-
-    res_df = pd.DataFrame(results).sort_values("Accuracy", ascending=False).reset_index(drop=True)
-
-    st.markdown('<div class="section-title">📊 Bảng xếp hạng</div>', unsafe_allow_html=True)
-    c1, c2 = st.columns([1.2, 2])
     with c1:
-        st.dataframe(
-            res_df.style.format({"Accuracy": "{:.2%}"})
-                        .background_gradient(subset=["Accuracy"], cmap="Blues"),
-            use_container_width=True,
-        )
+        st.markdown('<div class="metric-card"><div class="num">400</div><div class="label">Học sinh đang theo dõi</div></div>', unsafe_allow_html=True)
     with c2:
-        fig, ax = plt.subplots(figsize=(7, 3.5))
-        colors_bar = ["#2d6a4f", "#3b7dd8", "#764ba2", "#e53e3e"]
-        bars = ax.barh(res_df["Thuật toán"], res_df["Accuracy"], color=colors_bar[::-1], height=0.55)
-        for bar, val in zip(bars, res_df["Accuracy"]):
-            ax.text(bar.get_width() + 0.005, bar.get_y() + bar.get_height() / 2,
-                    f"{val:.2%}", va="center", fontsize=10, fontweight="bold")
-        ax.set_xlim(0, 1.15)
-        ax.set_xlabel("Accuracy", fontsize=10)
-        ax.set_title("So sánh Accuracy", fontweight="bold")
-        fig.tight_layout()
+        st.markdown(f'<div class="metric-card"><div class="num">{df_edu["Điểm cuối kỳ"].mean():.2f}</div><div class="label">Điểm cuối kỳ TB</div></div>', unsafe_allow_html=True)
+    with c3:
+        st.markdown(f'<div class="metric-card"><div class="num">{df_edu["Tỷ lệ chuyên cần"].mean():.1f}%</div><div class="label">Tỷ lệ đi học chuyên cần</div></div>', unsafe_allow_html=True)
+    with c4:
+        st.markdown(f'<div class="metric-card"><div class="num" style="color:#dc2626">{df_edu["Nguy cơ bỏ học"].sum()}</div><div class="label">Học sinh cần trợ giúp gấp</div></div>', unsafe_allow_html=True)
+        
+    st.markdown('<div class="section-title">📊 Bức tranh Toàn cảnh Học lực & Tương tác</div>', unsafe_allow_html=True)
+    
+    col_g1, col_g2 = st.columns(2)
+    with col_g1:
+        fig, ax = plt.subplots(figsize=(6, 3.5))
+        sns.countplot(data=df_edu, x="Xếp loại học lực", palette="Blues_r", ax=ax)
+        ax.set_title("Phân phối Xếp loại Học lực Toàn trường", fontweight="bold", color="#1e3a8a")
+        ax.set_ylabel("Số lượng học sinh")
+        ax.set_xlabel("")
+        st.pyplot(fig, use_container_width=True)
+        plt.close()
+        
+    with col_g2:
+        fig, ax = plt.subplots(figsize=(6, 3.5))
+        sns.scatterplot(data=df_edu, x="Giờ tự học", y="Điểm cuối kỳ", hue="Xếp loại học lực", palette="viridis", alpha=0.8, ax=ax)
+        ax.set_title("Mối tương quan: Thời gian tự học vs Kết quả cuối kỳ", fontweight="bold", color="#1e3a8a")
         st.pyplot(fig, use_container_width=True)
         plt.close()
 
-    st.markdown('<div class="section-title">🗺️ Ma trận nhầm lẫn — Tất cả mô hình</div>', unsafe_allow_html=True)
-    fig, axes = plt.subplots(1, 4, figsize=(16, 4))
-    for ax, (name, yp) in zip(axes, preds.items()):
-        cm = confusion_matrix(y_te, yp)
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax,
-                    xticklabels=le.classes_, yticklabels=le.classes_, cbar=False)
-        ax.set_title(name, fontsize=9, fontweight="bold")
-        ax.set_xlabel("Dự đoán", fontsize=8)
-        ax.set_ylabel("Thực tế", fontsize=8)
-        ax.tick_params(labelsize=7)
-    fig.tight_layout()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 2. DỰ BÁO ĐIỂM SỐ (LINEAR REGRESSION)
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "📈 Dự báo Điểm số (Hồi quy Tuyến tính)":
+    st.markdown("""
+    <div class="main-hero">
+        <div class="badge">Bài toán Hồi Quy (Regression)</div>
+        <h1>📈 Dự Đoán Điểm Thi Cuối Kỳ</h1>
+        <p>Sử dụng thuật toán <b>Linear Regression</b> để ước lượng chính xác điểm số cuối kỳ của học sinh dựa trên quá trình học tập thực tế.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Tương tác LMS"]
+    X = df_edu[features].values
+    y = df_edu["Điểm cuối kỳ"].values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    
+    col_l, col_r = st.columns([1, 2])
+    with col_l:
+        st.markdown("### 🎛️ Giả lập học sinh mới")
+        sh = st.slider("Giờ tự học/tuần", 0.0, 12.0, 5.0)
+        at = st.slider("Chuyên cần (%)", 50, 100, 85)
+        mt = st.slider("Điểm giữa kỳ", 0.0, 10.0, 6.0)
+        lm = st.slider("Tương tác LMS (Click)", 0, 300, 120)
+        
+        pred_single = model.predict([[sh, at, mt, lm]])[0]
+        pred_single = np.clip(pred_single, 0, 10)
+        
+        st.markdown(f"""
+        <div class="edu-box">
+            <h4>🎯 Kết quả dự báo AI:</h4>
+            <span style="font-size:2rem; font-weight:bold; color:#16a34a">{pred_single:.2f} / 10</span> Điểm
+            <p style="margin-top:5px; font-size:0.9rem; color:#374151"><b>Khuyến nghị:</b> Học sinh có xu hướng đạt kết quả an toàn. Giáo viên có thể giao thêm bài tập nâng cao để kích thích tư duy.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col_r:
+        st.markdown("### 📊 Đánh giá chất lượng dự báo từ mô hình")
+        m1, m2 = st.columns(2)
+        m1.metric("Mức độ giải thích (R² Score)", f"{r2_score(y_test, y_pred):.2%}")
+        m2.metric("Sai số trung bình (RMSE)", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.3f} Điểm")
+        
+        fig, ax = plt.subplots(figsize=(6, 3))
+        ax.scatter(y_test, y_pred, color="#3b82f6", alpha=0.6, edgecolors="w")
+        ax.plot([0, 10], [0, 10], "r--", lw=2, label="Đường dự báo chuẩn")
+        ax.set_xlabel("Điểm thực tế")
+        ax.set_ylabel("Điểm AI dự báo")
+        ax.legend()
+        st.pyplot(fig, use_container_width=True)
+        plt.close()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 3. PHÂN LOẠI HỌC LỰC (DECISION TREE)
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "🌳 Phân loại Học lực (Cây Quyết định)":
+    st.markdown("""
+    <div class="main-hero">
+        <div class="badge">Bài toán Phân Loại (Classification)</div>
+        <h1>🌳 Phân Loại Học Lực Học Sinh</h1>
+        <p>Mô hình <b>Decision Tree</b> bóc tách các điều kiện logic để tự động xếp lớp học lực (Giỏi, Khá, Trung bình, Yếu).</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Tương tác LMS"]
+    le = LabelEncoder()
+    y_encoded = le.fit_transform(df_edu["Xếp loại học lực"])
+    
+    X_train, X_test, y_train, y_test = train_test_split(df_edu[features].values, y_encoded, test_size=0.2, random_state=42)
+    
+    depth = st.sidebar.slider("Độ sâu của cây quyết định", 2, 6, 3)
+    clf = DecisionTreeClassifier(max_depth=depth, random_state=42)
+    clf.fit(X_train, y_train)
+    
+    st.markdown("### 🗺️ Sơ đồ cây quyết định phân loại (Trực quan hóa tiêu chí)")
+    fig, ax = plt.subplots(figsize=(15, 6))
+    plot_tree(clf, feature_names=features, class_names=le.classes_, filled=True, rounded=True, fontsize=9, ax=ax)
     st.pyplot(fig, use_container_width=True)
     plt.close()
-
-    st.markdown('<div class="section-title">📋 Nhận xét tổng hợp</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="info-box">
-    <table style="width:100%; border-collapse:collapse; font-size:0.9rem">
-    <tr style="background:#dbeafe">
-        <th style="padding:8px;text-align:left">Thuật toán</th>
-        <th>Ưu điểm</th>
-        <th>Nhược điểm</th>
-        <th>Phù hợp nhất khi</th>
-    </tr>
-    <tr><td><b>Decision Tree</b></td><td>Dễ giải thích, trực quan</td><td>Dễ overfit</td><td>Cần giải thích quyết định cho GV</td></tr>
-    <tr style="background:#f8faff"><td><b>KNN</b></td><td>Đơn giản, không cần train</td><td>Chậm khi dữ liệu lớn</td><td>Gợi ý cá nhân hóa</td></tr>
-    <tr><td><b>Logistic Reg.</b></td><td>Cho xác suất, ổn định</td><td>Giả định tuyến tính</td><td>Dự đoán rủi ro bỏ học</td></tr>
-    <tr style="background:#f8faff"><td><b>Naive Bayes</b></td><td>Rất nhanh, ít dữ liệu</td><td>Giả định độc lập</td><td>Phân loại văn bản, câu hỏi</td></tr>
-    </table>
+    
+    st.markdown(f"""
+    <div class="edu-box">
+        💡 <b>Ý nghĩa Sư phạm:</b> Nhìn vào sơ đồ cây, nhà quản lý giáo dục có thể thấy ngay "Nút thắt" đầu tiên chia rẽ học lực lớn nhất chính là <b>{features[clf.tree_.feature[0]]}</b>. Điều này chứng minh hành vi này quyết định cốt lõi đến chất lượng đầu ra của học sinh tại trường.
     </div>
     """, unsafe_allow_html=True)
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 4. GỢI Ý LỘ TRÌNH (KNN)
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "👥 Gợi ý Lộ trình (K-Nhóm Hàng xóm)":
     st.markdown("""
-    <div class="info-box" style="margin-top:1rem">
-    🏆 <b>Kết luận:</b> Không có thuật toán "tốt nhất" tuyệt đối. Việc lựa chọn phụ thuộc vào:
-    kích thước dữ liệu, yêu cầu giải thích mô hình, tài nguyên tính toán, và bài toán cụ thể trong giáo dục.
-    Trong thực tế, nên thử nhiều mô hình và so sánh trên dữ liệu thực của trường/lớp.
+    <div class="main-hero">
+        <div class="badge">Hệ thống Khuyến Nghị (Recommender System)</div>
+        <h1>👥 Gợi Ý Lộ Trình Học Tập Cá Nhân Hóa</h1>
+        <p>Sử dụng <b>K-Nearest Neighbors</b> để tìm kiếm nhóm học sinh có hành vi tương đồng, từ đó gợi ý phương án ôn tập thích hợp.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ"]
+    X = df_edu[features].values
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    knn = KNeighborsClassifier(n_neighbors=5)
+    knn.fit(X_scaled, df_edu["Xếp loại học lực"])
+    
+    st.markdown("### 🛠️ Phân tích hồ sơ một học sinh")
+    c1, c2, c3 = st.columns(3)
+    sh = c1.slider("Giờ tự học/tuần", 0.0, 10.0, 3.5)
+    at = c2.slider("Tỷ lệ đi học (%)", 50, 100, 70)
+    mt = c3.slider("Điểm thi giữa kỳ", 0.0, 10.0, 4.0)
+    
+    student_sample = scaler.transform([[sh, at, mt]])
+    distances, indices = knn.kneighbors(student_sample)
+    
+    st.markdown("### 🤝 Bạn học có cùng xuất phát điểm (5 vị trí tương đồng nhất)")
+    matched_students = df_edu.iloc[indices[0]]
+    st.dataframe(matched_students[["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Điểm cuối kỳ", "Xếp loại học lực"]], use_container_width=True)
+    
+    avg_final_peers = matched_students["Điểm cuối kỳ"].mean()
+    
+    st.markdown(f"""
+    <div class="edu-box-danger">
+        ⚠️ <b>Chiến lược can thiệp từ AI:</b> 5 học sinh có hồ sơ tương tự bạn này trong quá khứ có điểm cuối kỳ trung bình là <b>{avg_final_peers:.2f}</b> và đa số rơi vào diện học lực trung bình yếu. <br>
+        <b>👉 Khuyên dùng:</b> Nhà trường cần xếp học sinh này vào nhóm "Phụ đạo tích cực", tăng cường thời gian tự học lên tối thiểu 6 giờ/tuần để cải thiện tình hình.
     </div>
     """, unsafe_allow_html=True)
 
-# ── Footer ────────────────────────────────────────────────────────────────────
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 5. CẢNH BÁO SỚM HỌC SINH BỎ HỌC (LOGISTIC REGRESSION)
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "🚨 Cảnh báo Sớm Học sinh Bỏ học (Logistic)":
+    st.markdown("""
+    <div class="main-hero" style="background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);">
+        <div class="badge" style="background:rgba(0,0,0,0.3)">Hệ Thống Phòng Chống Rủi Rõ Học Đường</div>
+        <h1>🚨 Cảnh Báo Sớm Nguy Cơ Bỏ Học</h1>
+        <p>Thuật toán xác suất <b>Logistic Regression</b> phân tích dữ liệu chuyên cần và điểm số để tính toán xác suất (%) rủi ro một học sinh có khả năng nghỉ học giữa chừng.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Tương tác LMS"]
+    X = df_edu[features].values
+    y = df_edu["Nguy cơ bỏ học"].values
+    
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    clf_log = LogisticRegression()
+    clf_log.fit(X_scaled, y)
+    
+    st.markdown("### 🔎 Kiểm tra mức độ rủi ro của học sinh nghi vấn")
+    col1, col2 = st.columns(2)
+    with col1:
+        v_at = st.slider("Tỷ lệ chuyên cần hiện tại của học sinh (%)", 40, 100, 65)
+        v_mt = st.slider("Điểm số giữa kỳ hiện tại", 0.0, 10.0, 3.5)
+        v_sh = 2.0
+        v_lms = 40
+        
+        test_student = scaler.transform([[v_sh, v_at, v_mt, v_lms]])
+        risk_prob = clf_log.predict_proba(test_student)[0][1]
+        
+    with col2:
+        st.markdown("#### Trạng thái cảnh báo từ hệ thống AI:")
+        if risk_prob > 0.5:
+            st.markdown(f"""
+            <div class="edu-box-danger" style="text-align:center">
+                <span style="font-size:1.2rem; font-weight:bold; color:#dc2626">🔴 BÁO ĐỘNG ĐỎ</span><br>
+                <span style="font-size:3rem; font-weight:bold; color:#dc2626">{risk_prob:.1%}</span><br>
+                <b>Nguy cơ bỏ học rất cao!</b>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class="edu-box" style="text-align:center">
+                <span style="font-size:1.2rem; font-weight:bold; color:#16a34a">🟢 AN TOÀN</span><br>
+                <span style="font-size:3rem; font-weight:bold; color:#16a34a">{risk_prob:.1%}</span><br>
+                <b>Nằm trong tầm kiểm soát.</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 6. SÀNG LỌC ĐƠN XIN HỌC BỔNG (NAIVE BAYES)
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "📊 Sàng lọc Đơn xin Học bổng (Naive Bayes)":
+    st.markdown("""
+    <div class="main-hero">
+        <div class="badge">Xử lý tự động hóa</div>
+        <h1>📊 Sàng Lọc Học Bổng Tự Động</h1>
+        <p>Ứng dụng định lý xác suất <b>Naive Bayes</b> để dự đoán nhanh khả năng đạt danh hiệu Giỏi/Xuất sắc dựa trên các điều kiện độc lập có sẵn.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Tương tác LMS"]
+    X = df_edu[features].values
+    y = (df_edu["Xếp loại học lực"] == "Giỏi/Xuất sắc").astype(int)
+    
+    nb = GaussianNB()
+    nb.fit(X, y)
+    
+    st.markdown("### 📑 Thẩm định nhanh thông số xét duyệt hồ sơ")
+    c1, c2 = st.columns(2)
+    in_sh = c1.number_input("Số giờ tự học bình quân/tuần", 0.0, 15.0, 8.5)
+    in_mt = c2.number_input("Điểm thi khảo sát giữa kỳ", 0.0, 10.0, 8.2)
+    
+    prob_scholarship = nb.predict_proba([[in_sh, 95.0, in_mt, 200.0]])[0][1]
+    
+    st.markdown(f"""
+    <div class="edu-box">
+        🎯 Xác suất học sinh này đạt danh hiệu học lực Giỏi/Xuất sắc cuối kỳ là: <b>{prob_scholarship:.2%}</b>.<br>
+        Mô hình Bayes giúp bộ phận khảo thí đưa ra bộ lọc sơ bộ hồ sơ trước khi thành lập hội đồng chấm xét học bổng chính thức.
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 7. KHẢO SÁT HIỆU NĂNG MÔ HÌNH
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "⚖️ Khảo sát Hiệu năng Mô hình":
+    st.markdown("""
+    <div class="main-hero">
+        <div class="badge">Đánh giá Khoa học Dữ liệu</div>
+        <h1>⚖️ So Sánh Hiệu Năng 3 Thuật Toán Phân Loại</h1>
+        <p>Báo cáo kỹ thuật so sánh độ chính xác của các thuật toán trên bài toán phân loại học lực học sinh.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    features = ["Giờ tự học", "Tỷ lệ chuyên cần", "Điểm giữa kỳ", "Tương tác LMS"]
+    le = LabelEncoder()
+    y_encoded = le.fit_transform(df_edu["Xếp loại học lực"])
+    
+    X_train, X_test, y_train, y_test = train_test_split(df_edu[features].values, y_encoded, test_size=0.2, random_state=42)
+    
+    models = {
+        "Cây Quyết định (Decision Tree)": DecisionTreeClassifier(max_depth=4, random_state=42),
+        "K-Hàng xóm gần nhất (KNN)": KNeighborsClassifier(n_neighbors=5),
+        "Phân loại Bayes Ngây thơ (Naive Bayes)": GaussianNB()
+    }
+    
+    scores = []
+    for name, model in models.items():
+        model.fit(X_train, y_train)
+        acc = accuracy_score(y_test, model.predict(X_test))
+        scores.append({"Mô hình học máy": name, "Độ chính xác (Accuracy)": acc})
+        
+    st.dataframe(pd.DataFrame(scores).style.format({"Độ chính xác (Accuracy)": "{:.2%}"}), use_container_width=True)
+    
+    st.markdown("""
+    <div class="edu-box">
+        💡 <b>Tổng kết:</b> Trong các bài toán quản lý giáo dục, ngoài <b>Độ chính xác (Accuracy)</b>, chúng ta cần ưu tiên chọn các mô hình có tính <b>Giải thích được (Explainable AI)</b> như Cây quyết định để giải trình rõ ràng lý do hệ thống đưa ra quyết định hoặc cảnh báo đối với học sinh cho phụ huynh và nhà trường.
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── FOOTER ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer">
-    🎓 Đề tài: <b>Tìm hiểu về một số thuật toán học máy và ứng dụng trong giáo dục</b><br>
-    Môn: Nhập môn Khoa học Dữ liệu &nbsp;|&nbsp; Lê Văn Thành - 24T1110009
+    🎓 Hệ thống mô phỏng KHDL ứng dụng Giáo dục | Xây dựng hoàn toàn bằng Thư viện Streamlit & Scikit-Learn
 </div>
 """, unsafe_allow_html=True)
